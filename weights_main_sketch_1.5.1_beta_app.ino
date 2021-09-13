@@ -132,13 +132,18 @@ void loop() {
   }
   if (Serial.available()>0){
    command = String(Serial.readString());
-   command.remove(command.length() - 1, 1);
    lcd.print(command);
    delay(2000);
    lcd.clear();
    displayview();
    if (command == "measure"){
     measure();
+   }
+   if (command == "calib"){
+    calib();
+   }
+   if (command == "save"){
+    save();
    }
   } 
 
@@ -200,6 +205,14 @@ void measure(){
   Serial.println(F("Ожидание образца. Проверьте, что поверхность основного датчика пуста, аккуратно установите образец и калибровочный груз в 20 грамм.")); 
   Serial.println(F("Нажмите еще раз кнопку старт, чтобы продолжить процесс измерения или любую другую кнопку, чтобы выйти из режима измерения"));
   while (digitalRead(3) != 0){
+    if (Serial.available()>0){
+      command = String(Serial.readString());
+      if (command == "measure1") {
+        break;
+      } else if (command == "cancel") {
+        return;
+      }
+     }
     if ((digitalRead(2) == 0 ) || (digitalRead(4) == 0)){
       lcd.clear();
       displayview();
