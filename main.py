@@ -44,17 +44,21 @@ def measure():
     return ser.readline()
 
 
-ports = ['COM%s' % (i + 1) for i in range(256)]
+def port_search():
+    ports = ['COM%s' % (i + 1) for i in range(256)]
 
-result = []
-for port in ports:
-    try:
-        s = serial.Serial(port)
-        s.close()
-        result.append(port)
-    except (OSError, serial.SerialException):
-        pass
-ser = serial.Serial(result[0])  # open serial port
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
+
+
+ser = serial.Serial(port_search()[0])  # open serial port
 print(ser.readline())
 print(ser.readline())
 input()
