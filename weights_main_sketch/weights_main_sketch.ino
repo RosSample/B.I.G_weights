@@ -132,10 +132,6 @@ void loop() {
   }
   if (Serial.available()>0){
    command = String(Serial.readString());
-   lcd.print(command);
-   delay(2000);
-   lcd.clear();
-   displayview();
    if (command == "measure"){
     measure();
    }
