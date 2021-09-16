@@ -1,4 +1,5 @@
 import serial
+import datetime
 import sys
 from PyQt5 import uic  # Импортируем uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -74,6 +75,8 @@ ser = serial.Serial(port_search()[0])  # открытие порта
 log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
 log_write("найди работу")
 log_write("найди работу")
+time1 = str(datetime.datetime.utcnow())
+print(time1[:19])
 # print(ser.readline())
 # print(ser.readline())
 # input()
