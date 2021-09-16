@@ -167,8 +167,15 @@ void save(){
     lcd.print(F("Press again"));
     delay(1500);
     while (digitalRead(4) != 0){
+      if (Serial.available()>0){
+      command = String(Serial.readString());
+      if (command == "save1") {
+        break;
+      } else if (command != "save1") {
+        return;
+      }
+     }
       if ((digitalRead(2) == 0)||(digitalRead(3) == 0)){
-        Serial.println(F("Выход из сохранения"));
         return;
         }
     }
@@ -186,11 +193,11 @@ void save(){
         Serial.println(F("Data Saved"));                         // выводим сообщение об удачной записи
       }
       else {
-        Serial.println(F("Error opening datalog.txt"));          // если файл не доступен, выводим сообщение об ошибке
+        Serial.println(F("Error opening file.txt"));          // если файл не доступен, выводим сообщение об ошибке
       }
     }
     else {
-      Serial.println(F("Card failed, or not present"));     // если нет, то выводим сообщение об ошибке             
+      Serial.println(F("Card failed, or not present"));     // если нет, то выводим сообщение об ошибке
     }
     lcd.clear();
     displayview();
@@ -202,14 +209,13 @@ void measure(){
   lcd.print(F("Waiting"));
   lcd.setCursor(0, 3);   
   lcd.print(F("Press to cont-ue"));
-  Serial.println(F("Ожидание образца. Проверьте, что поверхность основного датчика пуста, аккуратно установите образец и калибровочный груз в 20 грамм.")); 
-  Serial.println(F("Нажмите еще раз кнопку старт, чтобы продолжить процесс измерения или любую другую кнопку, чтобы выйти из режима измерения"));
+  Serial.println(F("Measuring"));
   while (digitalRead(3) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
       if (command == "measure1") {
         break;
-      } else if (command == "cancel") {
+      } else if (command != "measure1") {
         return;
       }
      }
@@ -217,7 +223,6 @@ void measure(){
       lcd.clear();
       displayview();
       lcd.setCursor(0, 2);
-      Serial.println(F("Выход из измерения"));
       return;
     }
   }
@@ -255,15 +260,20 @@ void calib(){                                             //Функция дл�
   lcd.print(F("Start CALIB.?"));
   lcd.setCursor(0, 3); 
   lcd.print(F("Yes(C) No(S)"));
-  Serial.println(F("Вы хотите начать процесс Калибровки?"));
-  Serial.println(F("Да(кнопка Калибровка) / Нет (кнопка Старт)"));
   delay(1000);
   while (digitalRead(2) != 0){
+    if (Serial.available()>0){
+      command = String(Serial.readString());
+      if (command == "calib1") {
+        break;
+      } else if (command != "calib1") {
+        return;
+      }
+     }
     if ((digitalRead(3) == 0 ) || (digitalRead(4) == 0)){
       lcd.clear();
       displayview();
       lcd.setCursor(0, 2);
-      Serial.println(F("Выход из калибровки"));
       return;
     }
   }
@@ -275,16 +285,20 @@ void calib(){                                             //Функция дл�
     lcd.print("Calib: " + String(gramm));
     lcd.setCursor(0, 3);   
     lcd.print(F("Press again"));
-    Serial.println("Калибровка для веса в " + String(gramm));
-    Serial.println(F("Проверьте, что нужный вес находится на обоих датчиках."));
-    Serial.println(F("Нажмите еще раз кнопку калибровки, чтобы продолжить процесс калибровки или любую другую кнопку, чтобы выйти из режима калибровки."));
     delay(500);
     while (digitalRead(2) != 0){
+      if (Serial.available()>0){
+      command = String(Serial.readString());
+      if (command == "calib1") {
+        break;
+      } else if (command != "calib1") {
+        return;
+      }
+     }
       if ((digitalRead(3) == 0 ) || (digitalRead(4) == 0)){
         lcd.clear();
         displayview();
         lcd.setCursor(0, 2);
-        Serial.println(F("Выход из калибровки"));
         return;
       }
     }
@@ -324,7 +338,6 @@ void calib(){                                             //Функция дл�
   Serial.println(calibration_coefficient_calib);
   Serial.println(w_calib[0]);
   Serial.println(w_sample[0]);
-  Serial.println("Succes");
   EEPROM.put((sizeof(unsigned int)), calibration_coefficient_calib);
   EEPROM.put((sizeof(unsigned int) + sizeof(float)), calibration_coefficient_sample);
   EEPROM.put((sizeof(unsigned int) + sizeof(float) + sizeof(float)), w_calib[0]);
