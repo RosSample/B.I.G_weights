@@ -3,7 +3,6 @@ import sys
 from PyQt5 import uic  # Импортируем uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
-
 """
 class MyWidget(QMainWindow):  # загрузка дизайна
     def __init__(self):
@@ -24,27 +23,40 @@ if __name__ == '__main__':
 """
 
 
-def scan():
+def log_write(text):  # запись в лог
+    log.write(text + "\n")
     return
 
 
-def calib():
+def scan():  # сканирование штрихкода
     return
 
 
-def save():
+def calib():  # калибровка
+    ser.write("calib".encode())
+    ser.write("calib1".encode())
+    ser.write("calib1".encode())
+    a = ser.readline()
+    b = ser.readline()
+    c = ser.readline()
+    d = ser.readline()
+    log_write(a + b + c + d)
     return
 
 
-def measure():
+def save():  # сохранение
+    return
+
+
+def measure():  # измерение
     ser.write("measure".encode())
     ser.readline()
-    ser.readline()
     ser.write("measure1".encode())
+    log_write(ser.readline())
     return ser.readline()
 
 
-def port_search():
+def port_search():  # поиск портов
     ports = ['COM%s' % (i + 1) for i in range(256)]
 
     result = []
@@ -58,10 +70,14 @@ def port_search():
     return result
 
 
-ser = serial.Serial(port_search()[0])  # open serial port
-print(ser.readline())
-print(ser.readline())
-input()
-print(measure())
-input()
-ser.close()             # close port
+ser = serial.Serial(port_search()[0])  # открытие порта
+log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
+log_write("найди работу")
+log_write("найди работу")
+# print(ser.readline())
+# print(ser.readline())
+# input()
+# print(measure())
+# input()
+# ser.close()  # закрытие порта
+log.close()  # закрытие лога
