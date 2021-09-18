@@ -25,7 +25,9 @@ if __name__ == '__main__':
 
 
 def log_write(text):  # запись в лог
+    log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
     log.write(text + "\n")
+    log.close()
     return
 
 
@@ -34,14 +36,23 @@ def scan():  # сканирование штрихкода
 
 
 def calib():  # калибровка
+    calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
     ser.write("calib".encode())
-    ser.write("calib1".encode())
-    ser.write("calib1".encode())
-    a = ser.readline()
-    b = ser.readline()
-    c = ser.readline()
-    d = ser.readline()
-    log_write(a + b + c + d)
+    if calib_button_press:  # нажатие кнопки
+        ser.write("calib1".encode())
+        if calib_button_press:  # нажатие кнопки еще раз
+            ser.write("calib2".encode())
+        else:  # выход из калибровки при нажатии другой кнопки
+            ser.write("not calib2".encode())
+            return
+    else:  # выход из калибровки при нажатии другой кнопки
+        ser.write("not calib1".encode())
+        return
+    a = ser.readline(10)  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
+    b = ser.readline(10)  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
+    c = ser.readline(10)
+    d = ser.readline(10)
+    log_write((a, b, c, d))  # запись в лог    note to self: сделать парсировку строк
     return
 
 
@@ -51,9 +62,9 @@ def save():  # сохранение
 
 def measure():  # измерение
     ser.write("measure".encode())
-    ser.readline()
+    ser.readline(10)
     ser.write("measure1".encode())
-    log_write(ser.readline())
+    log_write(ser.readline(10))
     return ser.readline()
 
 
@@ -72,7 +83,6 @@ def port_search():  # поиск портов
 
 
 ser = serial.Serial(port_search()[0])  # открытие порта
-log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
 log_write("найди работу")
 log_write("найди работу")
 greenwich_time = str(datetime.datetime.utcnow())
@@ -83,4 +93,3 @@ print(greenwich_time[:19])
 # print(measure())
 # input()
 # ser.close()  # закрытие порта
-log.close()  # закрытие лога
