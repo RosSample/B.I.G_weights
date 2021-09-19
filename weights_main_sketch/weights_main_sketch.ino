@@ -205,7 +205,6 @@ void measure(){
   lcd.print(F("Waiting"));
   lcd.setCursor(0, 3);   
   lcd.print(F("Press to cont-ue"));
-  Serial.println(F("Measuring"));
   while (digitalRead(3) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
