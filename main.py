@@ -1,27 +1,5 @@
 import serial
 import datetime
-import sys
-from PyQt5 import uic  # Импортируем uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
-
-"""
-class MyWidget(QMainWindow):  # загрузка дизайна
-    def __init__(self):
-        super().__init__()
-        uic.loadUi('main1.ui', self)  # Загружаем дизайн
-        self.pushButton.clicked.connect(self.run)  # Обратите внимание: имя элемента такое же как в QTDesigner
-
-    def run(self):
-        self.label.setText("OK")
-        # Имя элемента совпадает с objectName в QTDesigner
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = MyWidget()
-    ex.show()
-    sys.exit(app.exec_())
-"""
 
 
 def log_write(text):  # запись в лог
@@ -53,7 +31,7 @@ def calib():  # калибровка
     c = ser.readline(10)
     d = ser.readline(10)
     log_write((a, b, c, d))  # запись в лог    note to self: сделать парсировку строк
-    return
+    return "Калибровка прошла успешно"
 
 
 def save():  # сохранение
@@ -61,11 +39,16 @@ def save():  # сохранение
 
 
 def measure():  # измерение
+    measure_button_press = True  # плейсхолдер нажатия на кнопку в приложении
     ser.write("measure".encode())
-    ser.readline(10)
-    ser.write("measure1".encode())
-    log_write(ser.readline(10))
-    return ser.readline()
+    if measure_button_press:  # нажатие кнопки
+        ser.write("measure1".encode())
+    else:  # выход из измерения при нажатии другой кнопки
+        ser.write("not measure1".encode())
+        return
+    weight = ser.readline(10)
+    log_write(weight)
+    return "Вес = " + weight
 
 
 def port_search():  # поиск портов
