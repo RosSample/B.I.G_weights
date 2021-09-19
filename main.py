@@ -48,7 +48,7 @@ def measure():  # измерение
         return
     weight = ser.readline(10)
     log_write(weight)
-    return "Вес = " + weight
+    return "Вес = " + str(weight)
 
 
 def port_search():  # поиск портов
