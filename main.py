@@ -15,16 +15,17 @@ def scan():  # сканирование штрихкода
 
 def calib():  # калибровка
     calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
-    ser.write("calib".encode())
+    ser.write("c".encode())
     if calib_button_press:  # имитация нажатия кнопки
-        ser.write("calib1".encode())
-        if calib_button_press:  # нажатие кнопки еще раз
-            ser.write("calib2".encode())
-        else:  # выход из калибровки при нажатии другой кнопки
-            ser.write("not calib2".encode())
-            return
+        ser.write("c1".encode())
+        for i in range(0, 4):
+            if calib_button_press:  # нажатие кнопки еще раз
+                ser.write("c2".encode())
+            else:  # выход из калибровки при нажатии другой кнопки
+                ser.write("0".encode())
+                return
     else:  # выход из калибровки при нажатии другой кнопки
-        ser.write("not calib1".encode())
+        ser.write("0".encode())
         return
     a = ser.readline(10)  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
     b = ser.readline(10)  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
@@ -40,11 +41,11 @@ def save():  # сохранение
 
 def measure():  # измерение
     measure_button_press = True  # плейсхолдер нажатия на кнопку в приложении
-    ser.write("measure".encode())
+    ser.write("m".encode())
     if measure_button_press:  # имитация нажатия кнопки
-        ser.write("measure1".encode())
+        ser.write("m1".encode())
     else:  # выход из измерения при нажатии другой кнопки
-        ser.write("not measure1".encode())
+        ser.write("0".encode())
         return
     weight = ser.readline(10)
     log_write((greenwich_time, str(weight)))

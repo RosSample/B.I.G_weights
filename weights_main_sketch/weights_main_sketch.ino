@@ -40,7 +40,6 @@ AltSoftSerial altSerial;                                  // объект для
 char time_arr[12];                                        // массив для хранения текущего времени
 char date[12];                                            // массив для хранения текущей даты
 char weekDay[12];
-String info;
 String sample_index = "000";
 
 unsigned int counter = 0;
@@ -58,7 +57,6 @@ float temp;                                               // переменна�
 float w_calib[3];                                         // массив для хранения медианных значений каждого веса калибровочного груза
 float w_sample[3];                                        // массив для хранения медианных значений каждого веса для 
 byte gramm = 0;                                           // переменная для вывода значения в граммах при калибровке
-File file = SD.open("file.txt", FILE_WRITE);
 
 float calibration_coefficient_calib = 0;
 float calibration_coefficient_sample = 0 ;
@@ -125,11 +123,6 @@ void setup() {
 }
 
 void loop() {
-  
-  if (altSerial.available()>0){
-   sample_index = String(altSerial.readString());
-   displayview();
-  }
   if (Serial.available()>0){
    command = String(Serial.readString());
    if (command == "measure"){
@@ -155,62 +148,67 @@ void loop() {
     save();
   }
 }
-void save(){ 
-  if (digitalRead(4) == 0){
-    lcd.setCursor(0, 2); 
-    lcd.print(F("Save?"));
-    lcd.setCursor(0, 3);   
-    lcd.print(F("Press again"));
-    delay(1500);
-    while (digitalRead(4) != 0){
-      if (Serial.available()>0){
+void save(){
+  lcd.setCursor(0, 2); 
+  lcd.print(F("Save?"));
+  lcd.setCursor(0, 3);   
+  lcd.print(F("Press again"));
+  delay(500);
+  while (digitalRead(4) != 0){
+    if (Serial.available()>0){
       command = String(Serial.readString());
       if (command == "save1") {
         break;
-      } else if (command != "save1") {
+      } else {
+        lcd.clear();
+        displayview();
+        lcd.setCursor(0, 2);
         return;
       }
-     }
-      if ((digitalRead(2) == 0)||(digitalRead(3) == 0)){
-        return;
-        }
     }
-    if (SD.begin(SD_CS_PIN)) {
-      counter = EEPROM.read(0);                            // считываем данные из ячейку EEPROM с адресом, записанным в переменной addr, и записываем результат в counter
-      counter += 1;
-      EEPROM.put(0, counter);                            // записываем значение счетчика кол-ва сохраненных измерений в ячейку EEPROM с адресом addr
-      clock.read();                                           // запрашиваем данные с часов
-      clock.getTimeStamp(time_arr, date, weekDay);            // сохраняем текущее время, дату и день недели в массивы объявленные выше 
-      Serial.println(F("Card initialized."));               // если всё в порядке выводим сообщение, что карта инициализирована
-      info = String(time_arr) + String(date) + sample_index + String(fin_weight_sample);
-      if (file) {
-        file.println(info);
-        file.close();
-        Serial.println(F("Data Saved"));                         // выводим сообщение об удачной записи
-      }
-      else {
-        Serial.println(F("Error opening file.txt"));          // если файл не доступен, выводим сообщение об ошибке
-      }
+    if ((digitalRead(2) == 0)||(digitalRead(3) == 0)){
+      return;
     }
-    else {
-      Serial.println(F("Card failed, or not present"));     // если нет, то выводим сообщение об ошибке
-    }
-    lcd.clear();
-    displayview();
-    delay(1000);
   }
+  if (SD.begin(SD_CS_PIN)) {
+    String info;
+    counter = EEPROM.read(0);                            // считываем данные из ячейку EEPROM с адресом, записанным в переменной addr, и записываем результат в counter
+    counter += 1;
+    EEPROM.put(0, counter);                            // записываем значение счетчика кол-ва сохраненных измерений в ячейку EEPROM с адресом addr
+    clock.read();                                           // запрашиваем данные с часов
+    clock.getTimeStamp(time_arr, date, weekDay);            // сохраняем текущее время, дату и день недели в массивы объявленные выше 
+    Serial.println(F("Card initialized."));               // если всё в порядке выводим сообщение, что карта инициализирована
+    info = String(time_arr) + " " + String(date) + " " + sample_index + " " + String(fin_weight_sample);
+    File savefile = SD.open("savefile.txt", FILE_WRITE);
+    if (savefile) {
+      savefile.println(info);
+      savefile.close();
+      Serial.println(F("Data Saved"));                         // выводим сообщение об удачной записи
+    } else {
+        Serial.println(F("Error opening savefile.txt"));          // если файл не доступен, выводим сообщение об ошибке
+    }
+  } else {
+      Serial.println(F("Card failed, or not present"));     // если нет, то выводим сообщение об ошибке
+  }
+  lcd.clear();
+  displayview();
+  delay(1000);
 }
 void measure(){
   lcd.setCursor(0, 2); 
   lcd.print(F("Waiting"));
   lcd.setCursor(0, 3);   
   lcd.print(F("Press to cont-ue"));
+  delay(500);
   while (digitalRead(3) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
       if (command == "measure1") {
         break;
-      } else if (command != "measure1") {
+      } else {
+        lcd.clear();
+        displayview();
+        lcd.setCursor(0, 2);
         return;
       }
      }
@@ -261,7 +259,10 @@ void calib(){                                             //Функция дл�
       command = String(Serial.readString());
       if (command == "calib1") {
         break;
-      } else if (command != "calib1") {
+      } else {
+        lcd.clear();
+        displayview();
+        lcd.setCursor(0, 2);
         return;
       }
      }
@@ -283,13 +284,16 @@ void calib(){                                             //Функция дл�
     delay(500);
     while (digitalRead(2) != 0){
       if (Serial.available()>0){
-      command = String(Serial.readString());
-      if (command == "calib1") {
-        break;
-      } else if (command != "calib1") {
-        return;
+        command = String(Serial.readString());
+        if (command == "calib2") {
+          break;
+        } else {
+          lcd.clear();
+          displayview();
+          lcd.setCursor(0, 2);
+          return;
+        }
       }
-     }
       if ((digitalRead(3) == 0 ) || (digitalRead(4) == 0)){
         lcd.clear();
         displayview();
