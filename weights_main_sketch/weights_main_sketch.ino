@@ -125,13 +125,13 @@ void setup() {
 void loop() {
   if (Serial.available()>0){
    command = String(Serial.readString());
-   if (command == "measure"){
+   if (command == "m"){
     measure();
    }
-   if (command == "calib"){
+   if (command == "c"){
     calib();
    }
-   if (command == "save"){
+   if (command == "s"){
     save();
    }
   } 
@@ -157,7 +157,7 @@ void save(){
   while (digitalRead(4) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
-      if (command == "save1") {
+      if (command == "s1") {
         break;
       } else {
         lcd.clear();
@@ -203,7 +203,7 @@ void measure(){
   while (digitalRead(3) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
-      if (command == "measure1") {
+      if (command == "m1") {
         break;
       } else {
         lcd.clear();
@@ -257,7 +257,7 @@ void calib(){                                             //Функция дл�
   while (digitalRead(2) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
-      if (command == "calib1") {
+      if (command == "c1") {
         break;
       } else {
         lcd.clear();
@@ -285,7 +285,7 @@ void calib(){                                             //Функция дл�
     while (digitalRead(2) != 0){
       if (Serial.available()>0){
         command = String(Serial.readString());
-        if (command == "calib2") {
+        if (command == "c2") {
           break;
         } else {
           lcd.clear();

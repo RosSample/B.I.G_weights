@@ -13,7 +13,7 @@ def scan():  # сканирование штрихкода
     return
 
 
-def calib():  # калибровка
+def calib():  # калибровка   status: Калибровка в процессе...
     calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
     ser.write("c".encode())
     if calib_button_press:  # имитация нажатия кнопки
@@ -27,19 +27,27 @@ def calib():  # калибровка
     else:  # выход из калибровки при нажатии другой кнопки
         ser.write("0".encode())
         return
-    a = ser.readline(10)  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
-    b = ser.readline(10)  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
-    c = ser.readline(10)
-    d = ser.readline(10)
+    a = ser.readline(10).strip()  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
+    b = ser.readline(10).strip()  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
+    c = ser.readline(10).strip()
+    d = ser.readline(10).strip()
     log_write((greenwich_time, str(a), str(b), str(c), str(d)))  # запись в лог
     return "Калибровка прошла успешно"
 
 
-def save():  # сохранение
-    return
+def save():  # сохранение   status: Сохранение в процессе...
+
+    save_button_press = True
+    ser.write("s".encode())
+    if save_button_press:  # имитация нажатия кнопки
+        ser.write("s1".encode())
+    else:  # выход из измерения при нажатии другой кнопки
+        ser.write("0".encode())
+        return
+    return "Сохранение прошло успкшно"
 
 
-def measure():  # измерение
+def measure():  # измерение   status: Измерение в процессе...
     measure_button_press = True  # плейсхолдер нажатия на кнопку в приложении
     ser.write("m".encode())
     if measure_button_press:  # имитация нажатия кнопки
@@ -47,7 +55,7 @@ def measure():  # измерение
     else:  # выход из измерения при нажатии другой кнопки
         ser.write("0".encode())
         return
-    weight = ser.readline(10)
+    weight = ser.readline(10).strip()
     log_write((greenwich_time, str(weight)))
     return "Вес = " + str(weight)
 
@@ -69,7 +77,8 @@ def port_search():  # поиск портов
 ser = serial.Serial(port_search()[0])  # открытие порта
 log_write("найди работу")
 log_write("найди работу")
-greenwich_time = str(datetime.datetime.utcnow())
+greenwich_time = str(datetime.datetime.utcnow())[:19]
+log_write(greenwich_time)
 print(greenwich_time[:19])
 # print(ser.readline())
 # print(ser.readline())
