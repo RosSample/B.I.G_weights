@@ -192,7 +192,7 @@ void save(){
   }
   lcd.clear();
   displayview();
-  delay(1000);
+  delay(500);
 }
 void measure(){
   lcd.setCursor(0, 2); 
@@ -253,7 +253,7 @@ void calib(){                                             //Функция дл�
   lcd.print(F("Start CALIB.?"));
   lcd.setCursor(0, 3); 
   lcd.print(F("Yes(C) No(S)"));
-  delay(1000);
+  delay(500);
   while (digitalRead(2) != 0){
     if (Serial.available()>0){
       command = String(Serial.readString());
