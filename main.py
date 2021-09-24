@@ -3,6 +3,14 @@ import datetime
 import time
 
 
+def calib_import(a, b, c, d):  # импорт настроек калибрации в весы
+    ser.write(a.encode())
+    ser.write(b.encode())
+    ser.write(c.encode())
+    ser.write(d.encode())
+    return
+
+
 def log_write(text):  # запись в лог
     log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
     log.write(text + "\n")
