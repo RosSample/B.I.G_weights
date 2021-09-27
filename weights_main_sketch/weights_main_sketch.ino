@@ -1,4 +1,3 @@
-
 /*
  *ЛАБОРАТОРНЫЕ ВЕСЫ ДЛЯ ПРОВЕДЕНИЯ ИЗМЕРЕНИЙ В УСЛОВИЯХ МОРСКОЙ КАЧКИ
  *Версия 1.5_alpha
@@ -244,6 +243,8 @@ void measure(){
   weight_calib = sum_calib[5];
   weight_sample = (weight_sample * (20 * calibration_coefficient_calib + w_calib[0]))/weight_calib;
   fin_weight_sample = (weight_sample - w_sample[0])/calibration_coefficient_sample;
+  Serial.println(counter);
+  Serial.println(sample_index);
   Serial.println(fin_weight_sample);
   lcd.clear();
   displayview();
