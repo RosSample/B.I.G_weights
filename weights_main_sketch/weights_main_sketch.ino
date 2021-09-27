@@ -122,8 +122,9 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available()>0){
+  if (Serial.available()>0) {
    command = String(Serial.readString());
+  }
    if (command == "m"){
     measure();
    }
@@ -132,6 +133,24 @@ void loop() {
    }
    if (command == "s"){
     save();
+   }
+   if (command == "sc"){
+    altSerial.write(static_cast<byte>(0x7E));
+    altSerial.write(static_cast<byte>(0x00));
+    altSerial.write(static_cast<byte>(0x08));
+    altSerial.write(static_cast<byte>(0x01));
+    altSerial.write(static_cast<byte>(0x00));
+    altSerial.write(static_cast<byte>(0x02));
+    altSerial.write(static_cast<byte>(0x01));
+    altSerial.write(static_cast<byte>(0xAB));
+    altSerial.write(static_cast<byte>(0xCD));
+    command = "";
+    delay(5000);
+    if (altSerial.available()>0) {
+      sample_index = altSerial.readString();
+      altSerial.flush();
+      delay(5000);
+      Serial.println(sample_index);
    }
   } 
 
