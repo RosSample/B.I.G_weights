@@ -20,6 +20,8 @@ def log_write(text):  # запись в лог
 
 
 def scan():  # сканирование штрих кода
+    time.sleep(1)
+    ser.write("sc".encode())
     return
 
 

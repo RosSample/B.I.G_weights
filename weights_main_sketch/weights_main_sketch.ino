@@ -144,27 +144,26 @@ void loop() {
     altSerial.write(static_cast<byte>(0x01));
     altSerial.write(static_cast<byte>(0xAB));
     altSerial.write(static_cast<byte>(0xCD));
-    command = "";
-    delay(5000);
-    if (altSerial.available()>0) {
-      sample_index = altSerial.readString();
-      altSerial.flush();
-      delay(5000);
-      Serial.println(sample_index);
-   }
-  } 
-
+    command = "0"; 
+    while (altSerial.available() == 0){
+      }
+    byte buffer[7];
+    altSerial.readBytes(buffer, 7);   
+  }
   if (digitalRead(2) == 0){
     calib();
   }
-
   if (digitalRead(3) == 0){
     measure();
   }
-  
   if (digitalRead(4) == 0){
     save();
   }
+  if (altSerial.available()>0) {
+      sample_index = altSerial.readString();
+      Serial.println(sample_index);
+      displayview();
+   }
 }
 void save(){
   lcd.setCursor(0, 2); 
