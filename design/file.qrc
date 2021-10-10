@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/scan.png</file>
+    <file>images/calib.png</file>
+    <file>images/save.png</file>
+    <file>images/settings.png</file>
+    <file>images/weight.png</file>
+  </qresource>
+</RCC>

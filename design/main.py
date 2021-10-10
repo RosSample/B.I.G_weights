@@ -1,15 +1,25 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
+
+from design import Ui_Weights  # импорт нашего сгенерированного файла
+
+
+class mywindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(mywindow, self).__init__()
+        self.ui = Ui_Weights()
+        self.ui.setupUi(self)
+        self.setWindowTitle('Весы')     # название программы
+        self.setWindowIcon(QIcon('./images/icon.png'))      # иконка программы
+
+        self.show()
 
 
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
+    application = mywindow()
+    application.show()
 
-    w = QWidget()
-    w.resize(250, 150)
-    w.move(300, 300)
-    w.setWindowTitle('Simple')
-    w.show()
-
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
