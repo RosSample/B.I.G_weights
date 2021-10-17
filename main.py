@@ -25,7 +25,7 @@ def scan():  # сканирование штрих кода
     return
 
 
-def calib():  # калибровка   status: Калибровка в процессе...
+def calib():  # калибровка  status: Калибровка...
     calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
     time.sleep(1)
     ser.write("c".encode())
@@ -51,12 +51,12 @@ def calib():  # калибровка   status: Калибровка в проц�
     calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
     calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
     calib_settings.close()
-    log_write(greenwich_time + " " + a + " " + b + " " + c + " " + d)  # запись в лог
+    log_write("[" + greenwich_time + "]" + " " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
     time.sleep(1)
     return
 
 
-def save():  # сохранение   status: Сохранение в процессе...
+def save():  # сохранение  status: Сохранение...
     if not card:
         print("Отсутствует карта")
         return
@@ -74,7 +74,7 @@ def save():  # сохранение   status: Сохранение в проце
     return
 
 
-def measure():  # измерение
+def measure():  # измерение  status: Измерение...
     measure_button_press = True
     time.sleep(1)
     ser.write("m".encode())
@@ -87,8 +87,8 @@ def measure():  # измерение
     counter = ser.readline().strip().decode()
     sample_index = ser.readline().strip().decode()
     weight = ser.readline().strip().decode()
-    log_write(counter + " " + sample_index + " " + greenwich_time + " " + weight)
-    print("Вес = " + weight)                  # вид строки: счетчик, индекс образца, дата, время, вес
+    log_write("[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
+    print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
     time.sleep(1)
     return
 
@@ -109,8 +109,8 @@ def port_search():  # поиск портов
 
 ser = serial.Serial(port_search()[0])  # открытие порта
 greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-print(ser.readline().strip().decode())
-cardln = ser.readline().strip().decode()
+print(ser.readline().strip().decode())  # чтение первой строки из serial порта
+cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
 print(cardln)
 if cardln == "Card initialized.":  # проверка наличия sd карты
     card = True
