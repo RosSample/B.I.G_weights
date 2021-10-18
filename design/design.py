@@ -70,13 +70,21 @@ class Ui_Weights(object):
         self.selectionWindow.setObjectName("selectionWindow")
         self.horizontalLayoutPortsMain.addWidget(self.selectionWindow)
         self.connectButton = QtWidgets.QPushButton(self.centralwidget)
-        self.connectButton.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.connectButton.setMaximumSize(QtCore.QSize(30, 16777215))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.connectButton.setFont(font)
+        self.connectButton.setStyleSheet("image: url(:/images/images/connect.png);")
+        self.connectButton.setText("")
         self.connectButton.setObjectName("connectButton")
         self.horizontalLayoutPortsMain.addWidget(self.connectButton)
+        self.disconnectButton = QtWidgets.QPushButton(self.centralwidget)
+        self.disconnectButton.setMaximumSize(QtCore.QSize(30, 16777215))
+        self.disconnectButton.setStyleSheet("image: url(:/images/images/disconnect.png);")
+        self.disconnectButton.setText("")
+        self.disconnectButton.setObjectName("disconnectButton")
+        self.horizontalLayoutPortsMain.addWidget(self.disconnectButton)
         self.verticalLayout.addLayout(self.horizontalLayoutPortsMain)
         self.verticalLayoutMain = QtWidgets.QVBoxLayout()
         self.verticalLayoutMain.setObjectName("verticalLayoutMain")
@@ -192,23 +200,21 @@ class Ui_Weights(object):
         Weights.setTabOrder(self.weighButton, self.calibButton)
         Weights.setTabOrder(self.calibButton, self.saveButton)
         Weights.setTabOrder(self.saveButton, self.scanButton)
-        Weights.setTabOrder(self.scanButton, self.labelEditWorkStatus)
         QToolTip.setFont(QFont('SansSerif', 10))
 
-        # подсказки при наведении на кнопки
+        # дсказки при наведении на кнопки
         self.weighButton.setToolTip('Взвешивание')
         self.calibButton.setToolTip('Калибровка')
         self.saveButton.setToolTip('Сохранение')
         self.scanButton.setToolTip('Сканирование')
         self.settingsButton.setToolTip('Настройки')
-
-
+        self.connectButton.setToolTip('Подключить')
+        self.disconnectButton.setToolTip('Отключить')
 
     def retranslateUi(self, Weights):
         _translate = QtCore.QCoreApplication.translate
         Weights.setWindowTitle(_translate("Weights", "MainWindow"))
         self.labelPort.setText(_translate("Weights", "Порт"))
-        self.connectButton.setText(_translate("Weights", "Подключить"))
         self.cleanButton.setText(_translate("Weights", "Очистить"))
         self.labelWorkStatus.setText(_translate("Weights", "Статус работы:   "))
 
@@ -217,4 +223,4 @@ class Ui_Weights(object):
         self.labelEditWorkStatus.setText(_translate("Weights", text))
         self.labelEditWorkStatus.setWordWrap(True)
 
-import icons
+    import icons
