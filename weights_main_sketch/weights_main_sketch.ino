@@ -161,7 +161,7 @@ void loop() {
   }
   if (altSerial.available()>0) {
       sample_index = altSerial.readString();
-      Serial.println(sample_index);
+      // Serial.println(sample_index);
       displayview();
    }
 }

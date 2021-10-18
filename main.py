@@ -2,7 +2,7 @@ import serial
 import datetime
 import time
 
-
+"""
 def calib_export(a, b, c, d):  # импорт настроек калибрации в весы
     ser.write("ex".encode())
     ser.write(a.encode())
@@ -10,6 +10,7 @@ def calib_export(a, b, c, d):  # импорт настроек калибрац�
     ser.write(c.encode())
     ser.write(d.encode())
     return
+"""
 
 
 def log_write(text):  # запись в лог
@@ -19,9 +20,11 @@ def log_write(text):  # запись в лог
     return
 
 
-def scan():  # сканирование штрих кода
+def scan():  # сканирование штрих кода в течении 5 секунд
     time.sleep(1)
     ser.write("sc".encode())
+    print("[" + greenwich_time + "] Сканирование штрих-кода")
+    time.sleep(5)
     return
 
 
@@ -47,7 +50,7 @@ def calib():  # калибровка  status: Калибровка...
     b = ser.readline().strip().decode()  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
     c = ser.readline().strip().decode()
     d = ser.readline().strip().decode()
-    print("Калибровка прошла успешно")
+    print("[" + greenwich_time + "] Калибровка прошла успешно")
     calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
     calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
     calib_settings.close()
@@ -117,7 +120,8 @@ if cardln == "Card initialized.":  # проверка наличия sd карт
 else:
     card = False
 
+calib()
+scan()
 measure()
-save()
 
 ser.close()  # закрытие порта
