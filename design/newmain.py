@@ -8,8 +8,6 @@ from PyQt5.QtGui import QIcon
 
 from design import Ui_Weights  # импорт нашего сгенерированного файла
 
-ser = ''
-
 
 def log_write(text):  # запись в лог
     log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
@@ -75,37 +73,23 @@ def save():  # сохранение  status: Сохранение...
     return
 
 
-def measure():  # измерение  status: Измерение...
-    measure_button_press = True
-    time.sleep(1)
-    ser.write("m".encode())
-    if measure_button_press:  # имитация нажатия кнопки
-        time.sleep(1)
-        ser.write("m1".encode())
-    else:  # выход из измерения при нажатии другой кнопки
-        ser.write("0".encode())
-        return
-    counter = ser.readline().strip().decode()
-    sample_index = ser.readline().strip().decode()
-    weight = ser.readline().strip().decode()
-    log_write("[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
-    print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
-    time.sleep(1)
-    return
-
-
-def ser_connect():
-    ser = serial.Serial(port_search()[i])
-    print(ser.readline().strip().decode())  # чтение первой строки из serial порта
-    cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
-    print(cardln)
-    card = cardln == "Card initialized."  # проверка наличия sd карты
-
-    ser = serial.Serial(port_search()[i])
-
-
-def ser_close():
-    ser.close()
+# def measure():  # измерение  status: Измерение...
+#     measure_button_press = True
+#     time.sleep(1)
+#     ser.write("m".encode())
+#     if measure_button_press:  # имитация нажатия кнопки
+#         time.sleep(1)
+#         ser.write("m1".encode())
+#     else:  # выход из измерения при нажатии другой кнопки
+#         ser.write("0".encode())
+#         return
+#     counter = ser.readline().strip().decode()
+#     sample_index = ser.readline().strip().decode()
+#     weight = ser.readline().strip().decode()
+#     log_write("[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
+#     print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
+#     time.sleep(1)
+#     return
 
 
 def port_search():  # поиск портов
@@ -122,6 +106,7 @@ def port_search():  # поиск портов
     return result
 
 
+# ser = serial.Serial(port_search()[0])  # открытие порта
 greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
 
 
@@ -134,24 +119,55 @@ class mywindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
 
         self.show()
-        self.ui.weighButton.clicked.connect(measure)
+        self.ui.weighButton.clicked.connect(self.measure)
         self.ui.saveButton.clicked.connect(save)
         self.ui.scanButton.clicked.connect(scan)
         self.ui.calibButton.clicked.connect(calib)
-        self.ui.selectionWindow.activated.connect(port_search1)
+        self.ui.connectButton.clicked.connect(self.port_add)
+        self.ui.disconnectButton.clicked.connect(self.port_disconnect)
 
-    def port_search1(self):  # поиск портов
-        ports = ['COM%s' % (i + 1) for i in range(256)]
+        self.ui.selectionWindow.activated.connect(self.port_connect)
 
-        result = []
-        for port in ports:
-            try:
-                se = serial.Serial(port)
-                se.close()
-                result.append(port)
-            except (OSError, serial.SerialException):
-                pass
-        return result
+    def measure(self):  # измерение  status: Измерение...
+        measure_button_press = True
+        time.sleep(1)
+        ser.write("m".encode())
+        if measure_button_press:  # имитация нажатия кнопки
+            time.sleep(1)
+            ser.write("m1".encode())
+        else:  # выход из измерения при нажатии другой кнопки
+            ser.write("0".encode())
+            return
+        counter = ser.readline().strip().decode()
+        sample_index = ser.readline().strip().decode()
+        weight = ser.readline().strip().decode()
+        log_write(
+            "[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
+        print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
+        time.sleep(1)
+        return
+
+    def port_connect(self):
+        port = self.sender().currentText()
+        print(port)
+        global ser
+        ser = serial.Serial(port)
+
+        global card
+        print(ser.readline().strip().decode())  # чтение первой строки из serial порта
+        cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
+        print(cardln)
+        if cardln == "Card initialized.":  # проверка наличия sd карты
+            card = True
+        else:
+            card = False
+
+    def port_disconnect(self):
+        ser.close()
+
+    def port_add(self):
+        ports = port_search()
+        self.ui.selectionWindow.addItems(ports)
 
 
 if __name__ == '__main__':
