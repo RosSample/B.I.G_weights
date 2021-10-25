@@ -120,13 +120,16 @@ class mywindow(QtWidgets.QMainWindow):
 
         self.show()
         self.ui.weighButton.clicked.connect(self.measure)
-        self.ui.saveButton.clicked.connect(save)
+        self.ui.saveButton.clicked.connect(lambda x: self.addText("why are you black"))
         self.ui.scanButton.clicked.connect(scan)
         self.ui.calibButton.clicked.connect(calib)
         self.ui.connectButton.clicked.connect(self.port_add)
         self.ui.disconnectButton.clicked.connect(self.port_disconnect)
 
         self.ui.selectionWindow.activated.connect(self.port_connect)
+
+    def addText(self, text):
+        self.ui.textShow.setText(self.ui.textShow.text() + text + "\n")
 
     def measure(self):  # измерение  status: Измерение...
         measure_button_press = True
@@ -143,20 +146,21 @@ class mywindow(QtWidgets.QMainWindow):
         weight = ser.readline().strip().decode()
         log_write(
             "[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
-        print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
-        time.sleep(1)
+        self.addText(
+            "[" + counter + " " + sample_index + " " + greenwich_time + "] " + "Вес = " + weight)  # индекс образца,
+        time.sleep(1)                                                                       # дата, время, вес
         return
 
     def port_connect(self):
         port = self.sender().currentText()
-        print(port)
+        self.addText(port)
         global ser
         ser = serial.Serial(port)
 
         global card
-        print(ser.readline().strip().decode())  # чтение первой строки из serial порта
+        self.addText(ser.readline().strip().decode())  # чтение первой строки из serial порта
         cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
-        print(cardln)
+        self.addText(cardln)
         if cardln == "Card initialized.":  # проверка наличия sd карты
             card = True
         else:
@@ -166,6 +170,7 @@ class mywindow(QtWidgets.QMainWindow):
         ser.close()
 
     def port_add(self):
+        self.ui.selectionWindow.clear()
         ports = port_search()
         self.ui.selectionWindow.addItems(ports)
 
