@@ -119,7 +119,7 @@ class mywindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
 
         self.show()
-        self.ui.weighButton.clicked.connect(self.measure)
+        self.ui.weighButton.clicked.connect(self.ms)
         self.ui.saveButton.clicked.connect(lambda x: self.addText("why are you black"))
         self.ui.scanButton.clicked.connect(scan)
         self.ui.calibButton.clicked.connect(calib)
@@ -130,6 +130,17 @@ class mywindow(QtWidgets.QMainWindow):
 
     def addText(self, text):
         self.ui.textShow.setText(self.ui.textShow.text() + text + "\n")
+
+    def ms(self):
+        time.sleep(1)
+        # ser.write("m".encode())
+        print("hey")
+        while not self.ui.weighButton.clicked.connect():
+            if self.ui.weighButton.clicked.connect():
+                time.sleep(1)
+                # ser.write("m1".encode())
+                print("help")
+                break
 
     def measure(self):  # измерение  status: Измерение...
         measure_button_press = True
