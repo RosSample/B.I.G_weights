@@ -8,6 +8,8 @@ from PyQt5.QtGui import QIcon
 
 from design import Ui_Weights  # импорт нашего сгенерированного файла
 
+ser = ''
+
 
 def log_write(text):  # запись в лог
     log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
@@ -92,6 +94,20 @@ def measure():  # измерение  status: Измерение...
     return
 
 
+def ser_connect():
+    ser = serial.Serial(port_search()[i])
+    print(ser.readline().strip().decode())  # чтение первой строки из serial порта
+    cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
+    print(cardln)
+    card = cardln == "Card initialized."  # проверка наличия sd карты
+
+    ser = serial.Serial(port_search()[i])
+
+
+def ser_close():
+    ser.close()
+
+
 def port_search():  # поиск портов
     ports = ['COM%s' % (i + 1) for i in range(256)]
 
@@ -106,15 +122,7 @@ def port_search():  # поиск портов
     return result
 
 
-ser = serial.Serial(port_search()[0])  # открытие порта
 greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-print(ser.readline().strip().decode())  # чтение первой строки из serial порта
-cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
-print(cardln)
-if cardln == "Card initialized.":  # проверка наличия sd карты
-    card = True
-else:
-    card = False
 
 
 class mywindow(QtWidgets.QMainWindow):
@@ -130,6 +138,20 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.saveButton.clicked.connect(save)
         self.ui.scanButton.clicked.connect(scan)
         self.ui.calibButton.clicked.connect(calib)
+        self.ui.selectionWindow.activated.connect(port_search1)
+
+    def port_search1(self):  # поиск портов
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+
+        result = []
+        for port in ports:
+            try:
+                se = serial.Serial(port)
+                se.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        return result
 
 
 if __name__ == '__main__':
