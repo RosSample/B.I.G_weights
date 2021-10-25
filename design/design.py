@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\2065-3-1-32-8\Desktop\layout-main\design.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mega_Mike\Desktop\B.I.G_weights-master\design\design.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -75,7 +75,7 @@ class Ui_Weights(object):
         font.setBold(True)
         font.setWeight(75)
         self.connectButton.setFont(font)
-        self.connectButton.setStyleSheet("image: url(:/images/images/connect.png);")
+        self.connectButton.setStyleSheet("image: url(:/images/images/refresh.png);")
         self.connectButton.setText("")
         self.connectButton.setObjectName("connectButton")
         self.horizontalLayoutPortsMain.addWidget(self.connectButton)
@@ -200,16 +200,18 @@ class Ui_Weights(object):
         Weights.setTabOrder(self.weighButton, self.calibButton)
         Weights.setTabOrder(self.calibButton, self.saveButton)
         Weights.setTabOrder(self.saveButton, self.scanButton)
+
         QToolTip.setFont(QFont('SansSerif', 10))
 
-        # дсказки при наведении на кнопки
+        # подсказки при наведении на кнопки
         self.weighButton.setToolTip('Взвешивание')
         self.calibButton.setToolTip('Калибровка')
         self.saveButton.setToolTip('Сохранение')
         self.scanButton.setToolTip('Сканирование')
         self.settingsButton.setToolTip('Настройки')
-        self.connectButton.setToolTip('Подключить')
+        self.connectButton.setToolTip('Обновить')
         self.disconnectButton.setToolTip('Отключить')
+
 
     def retranslateUi(self, Weights):
         _translate = QtCore.QCoreApplication.translate
@@ -223,4 +225,5 @@ class Ui_Weights(object):
         self.labelEditWorkStatus.setText(_translate("Weights", text))
         self.labelEditWorkStatus.setWordWrap(True)
 
-    import icons
+
+import icons

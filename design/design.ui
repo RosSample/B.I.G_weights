@@ -134,7 +134,7 @@
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">image: url(:/images/images/connect.png);</string>
+           <string notr="true">image: url(:/images/images/refresh.png);</string>
           </property>
           <property name="text">
            <string/>
