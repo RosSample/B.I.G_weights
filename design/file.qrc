@@ -1,7 +1,9 @@
 <RCC>
   <qresource prefix="images">
-    <file>images/connect1.png</file>
+    <file>images/refresh2.png</file>
+    <file>images/refresh (1).png</file>
     <file>images/connect.png</file>
+    <file>images/refresh.png</file>
     <file>images/disconnect.png</file>
     <file>images/scan.png</file>
     <file>images/calib.png</file>
