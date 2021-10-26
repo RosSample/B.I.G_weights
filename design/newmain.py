@@ -24,70 +24,51 @@ def scan():  # сканирование штрих кода в течении 5 
     return
 
 
-def calib():  # калибровка  status: Калибровка...
-    calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
-    time.sleep(1)
-    ser.write("c".encode())
-    if calib_button_press:  # имитация нажатия кнопки
-        time.sleep(1)
-        ser.write("c1".encode())
-        for i in range(0, 4):
-            time.sleep(1)
-            if calib_button_press:  # нажатие кнопки еще раз
-                time.sleep(1)
-                ser.write("c2".encode())
-            else:  # выход из калибровки при нажатии другой кнопки
-                ser.write("0".encode())
-                return
-    else:  # выход из калибровки при нажатии другой кнопки
-        ser.write("0".encode())
-        return
-    a = ser.readline().strip().decode()  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
-    b = ser.readline().strip().decode()  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
-    c = ser.readline().strip().decode()
-    d = ser.readline().strip().decode()
-    print("[" + greenwich_time + "] Калибровка прошла успешно")
-    calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
-    calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
-    calib_settings.close()
-    log_write("[" + greenwich_time + "]" + " " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
-    time.sleep(1)
-    return
-
-
-def save():  # сохранение  status: Сохранение...
-    if not card:
-        print("Отсутствует карта")
-        return
-    save_button_press = True
-    time.sleep(1)
-    ser.write("s".encode())
-    if save_button_press:  # имитация нажатия кнопки
-        time.sleep(1)
-        ser.write("s1".encode())
-        print("Успешно сохранено")
-    else:  # выход из сохранения при нажатии другой кнопки
-        ser.write("0".encode())
-        return
-    time.sleep(1)
-    return
-
-
-# def measure():  # измерение  status: Измерение...
-#     measure_button_press = True
+# def calib():  # калибровка  status: Калибровка...
+#     calib_button_press = True  # плейсхолдер нажатия на кнопку в приложении
 #     time.sleep(1)
-#     ser.write("m".encode())
-#     if measure_button_press:  # имитация нажатия кнопки
+#     ser.write("c".encode())
+#     if calib_button_press:  # имитация нажатия кнопки
 #         time.sleep(1)
-#         ser.write("m1".encode())
-#     else:  # выход из измерения при нажатии другой кнопки
+#         ser.write("c1".encode())
+#         for i in range(0, 4):
+#             time.sleep(1)
+#             if calib_button_press:  # нажатие кнопки еще раз
+#                 time.sleep(1)
+#                 ser.write("c2".encode())
+#             else:  # выход из калибровки при нажатии другой кнопки
+#                 ser.write("0".encode())
+#                 return
+#     else:  # выход из калибровки при нажатии другой кнопки
 #         ser.write("0".encode())
 #         return
-#     counter = ser.readline().strip().decode()
-#     sample_index = ser.readline().strip().decode()
-#     weight = ser.readline().strip().decode()
-#     log_write("[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
-#     print("[" + counter, sample_index, greenwich_time + "]", "Вес = " + weight)  # индекс образца, дата, время, вес
+#     a = ser.readline().strip().decode()  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
+#     b = ser.readline().strip().decode()  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
+#     c = ser.readline().strip().decode()
+#     d = ser.readline().strip().decode()
+#     print("[" + greenwich_time + "] Калибровка прошла успешно")
+#     calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
+#     calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
+#     calib_settings.close()
+#     log_write("[" + greenwich_time + "]" + " " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
+#     time.sleep(1)
+#     return
+
+
+# def save():  # сохранение  status: Сохранение...
+#     if not card:
+#         print("Отсутствует карта")
+#         return
+#     save_button_press = True
+#     time.sleep(1)
+#     ser.write("s".encode())
+#     if save_button_press:  # имитация нажатия кнопки
+#         time.sleep(1)
+#         ser.write("s1".encode())
+#         print("Успешно сохранено")
+#     else:  # выход из сохранения при нажатии другой кнопки
+#         ser.write("0".encode())
+#         return
 #     time.sleep(1)
 #     return
 
@@ -106,23 +87,25 @@ def port_search():  # поиск портов
     return result
 
 
-# ser = serial.Serial(port_search()[0])  # открытие порта
-greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-
-
 class mywindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(mywindow, self).__init__()
+
+        self.weighButtonClickedCount = 0
+        self.saveButtonClickedCount = 0
+        self.calibButtonClickedCount = 0
+        self.scanButtonClickedCount = 0
+
         self.ui = Ui_Weights()
         self.ui.setupUi(self)
         self.setWindowTitle('Весы')  # название программы
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
 
         self.show()
-        self.ui.weighButton.clicked.connect(self.ms)
-        self.ui.saveButton.clicked.connect(lambda x: self.addText("why are you black"))
+        self.ui.weighButton.clicked.connect(self.measure)
+        self.ui.saveButton.clicked.connect(self.save)
         self.ui.scanButton.clicked.connect(scan)
-        self.ui.calibButton.clicked.connect(calib)
+        self.ui.calibButton.clicked.connect(self.calib)
         self.ui.connectButton.clicked.connect(self.port_add)
         self.ui.disconnectButton.clicked.connect(self.port_disconnect)
 
@@ -131,35 +114,95 @@ class mywindow(QtWidgets.QMainWindow):
     def addText(self, text):
         self.ui.textShow.setText(self.ui.textShow.text() + text + "\n")
 
-    def ms(self):
-        time.sleep(1)
-        # ser.write("m".encode())
-        print("hey")
-        while not self.ui.weighButton.clicked.connect():
-            if self.ui.weighButton.clicked.connect():
-                time.sleep(1)
-                # ser.write("m1".encode())
-                print("help")
-                break
-
-    def measure(self):  # измерение  status: Измерение...
-        measure_button_press = True
-        time.sleep(1)
-        ser.write("m".encode())
-        if measure_button_press:  # имитация нажатия кнопки
+    def measure(self):
+        if self.weighButtonClickedCount == 0:
             time.sleep(1)
-            ser.write("m1".encode())
-        else:  # выход из измерения при нажатии другой кнопки
-            ser.write("0".encode())
+            ser.write("m".encode())
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.addText("[" + greenwich_time + "]" + " Измерение...")
+            self.ui.label.setText("Измерение")
+            self.addText("[" + greenwich_time + "]" + " Поставьте груз и нажмите еще раз.")
+            self.weighButtonClickedCount += 1
             return
+        self.weighButtonClickedCount = 0
+
+        time.sleep(1)
+        ser.write("m1".encode())
         counter = ser.readline().strip().decode()
         sample_index = ser.readline().strip().decode()
-        weight = ser.readline().strip().decode()
+        weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
+        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         log_write(
-            "[" + counter + " " + sample_index + " " + greenwich_time + " " + weight + "]")  # вид строки: счетчик,
+            "[" + counter + " " + sample_index + " " + greenwich_time + "] " + weight)
         self.addText(
-            "[" + counter + " " + sample_index + " " + greenwich_time + "] " + "Вес = " + weight)  # индекс образца,
-        time.sleep(1)                                                                       # дата, время, вес
+            "[" + counter + " " + sample_index + " " + greenwich_time + "] " + "Вес = " + weight + ".")
+        self.ui.label.setText("работает")
+        time.sleep(1)
+        return
+
+    def save(self):  # сохранение  status: Сохранение...
+        if not card:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.addText("[" + greenwich_time + "]" + " Отсустствует карта памяти.")
+            return
+
+        if self.saveButtonClickedCount == 0:
+            time.sleep(1)
+            # ser.write("s".encode())
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.addText("[" + greenwich_time + "]" + " Сохранение...")
+            self.ui.label.setText("сохранение")
+            self.addText("[" + greenwich_time + "]" + " Нажмите чтобы продолжить.")
+            self.saveButtonClickedCount += 1
+            return
+        self.saveButtonClickedCount = 0
+
+        time.sleep(1)
+        ser.write("s1".encode())
+        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+        self.addText("[" + greenwich_time + "]" + " Успешно сохранено.")
+        self.ui.label.setText("работает")
+        time.sleep(1)
+        return
+
+    def calib(self):  # калибровка  status: Калибровка...
+        if self.weighButtonClickedCount == 0:
+            time.sleep(1)
+            ser.write("c".encode())
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.addText("[" + greenwich_time + "]" + " Начать калибровку?")
+            self.ui.label.setText("Измерение")
+            self.addText("[" + greenwich_time + "]" + " Чтобы продолжить нажмите калибровать")
+            self.addText("[" + greenwich_time + "]" + " Чтобы продолжить нажмите сохранить")
+            self.weighButtonClickedCount += 1
+            return
+
+        time.sleep(1)
+        ser.write("c".encode())
+        if calib_button_press:  # имитация нажатия кнопки
+            time.sleep(1)
+            ser.write("c1".encode())
+            for i in range(0, 4):
+                time.sleep(1)
+                if calib_button_press:  # нажатие кнопки еще раз
+                    time.sleep(1)
+                    ser.write("c2".encode())
+                else:  # выход из калибровки при нажатии другой кнопки
+                    ser.write("0".encode())
+                    return
+        else:  # выход из калибровки при нажатии другой кнопки
+            ser.write("0".encode())
+            return
+        a = ser.readline().strip().decode()  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample,
+        b = ser.readline().strip().decode()  # calibration_coefficient_calib, w_calib[0] и w_sample[0]
+        c = ser.readline().strip().decode()
+        d = ser.readline().strip().decode()
+        print("[" + greenwich_time + "] Калибровка прошла успешно")
+        calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
+        calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
+        calib_settings.close()
+        log_write("[" + greenwich_time + "]" + " " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
+        time.sleep(1)
         return
 
     def port_connect(self):
