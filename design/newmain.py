@@ -56,6 +56,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def add_text(self, text):
         self.ui.textShow.setText(self.ui.textShow.text() + text + "\n")
+        self.ui.scrollArea.verticalScrollBar().setValue(self.ui.scrollArea.verticalScrollBar().maximum())
 
     def measure(self):
         if self.weighButtonClickedCount == 0:
