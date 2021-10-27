@@ -244,6 +244,8 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def port_disconnect(self):
         ser.close()
+        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+        self.add_text("[" + greenwich_time + "] Порт успешно закрыт.")
 
     def port_add(self):
         self.ui.selectionWindow.clear()
