@@ -63,7 +63,7 @@ class MyWindow(QtWidgets.QMainWindow):
             ser.write("m".encode())
             greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
             self.add_text("[" + greenwich_time + "] Измерение...")
-            self.ui.label.setText("Измерение")
+            self.ui.label.setText("измерение")
             self.add_text("[" + greenwich_time + "] Поставьте груз и нажмите взвесить.")
             self.weighButtonClickedCount += 1
             return
@@ -114,8 +114,7 @@ class MyWindow(QtWidgets.QMainWindow):
             ser.write("c".encode())
             greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
             self.add_text("[" + greenwich_time + "] Начать калибровку?")
-            self.ui.label.setText("Измерение")
-            self.add_text("[" + greenwich_time + "]" + " Чтобы продолжить нажмите калибровать.")
+            self.add_text("[" + greenwich_time + "]" + " Для продолжения нажмите калибровать.")
             self.add_text("[" + greenwich_time + "]" + " Для отмены нажмите сохранить.")
             self.calibButtonClickedCount += 1
             self.ui.label.setText("калибровка")
@@ -178,7 +177,7 @@ class MyWindow(QtWidgets.QMainWindow):
     def port_connect(self):
         port = self.sender().currentText()
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] Подключено к: " + port)
+        self.add_text("[" + greenwich_time + "] Подключение к: " + port)
         global ser
         ser = serial.Serial(port)
 
