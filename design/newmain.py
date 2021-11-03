@@ -46,6 +46,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
 
         self.show()
+        self.ui.cleanButton.clicked.connect(self.text_clear)
         self.ui.weighButton.clicked.connect(self.measure)
         self.ui.saveButton.clicked.connect(self.save)
         self.ui.scanButton.clicked.connect(self.scan)
@@ -55,9 +56,14 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.selectionWindow.activated.connect(self.port_connect)
 
+    def text_clear(self):
+        self.ui.textShow.setText("")
+        return
+
     def add_text(self, text):
         self.ui.textShow.setText(self.ui.textShow.text() + text + "\n")
         self.ui.scrollArea.verticalScrollBar().setValue(self.ui.scrollArea.verticalScrollBar().maximum())
+        return
 
     def measure(self):
         if not self.portConnected:
@@ -216,6 +222,7 @@ class MyWindow(QtWidgets.QMainWindow):
                       ser.readline().strip().decode())  # чтение первой строки из serial порта
         self.add_text("[" + greenwich_time + "] " +
                       ser.readline().strip().decode())  # чтение второй строки из serial порта
+        return
 
     def port_disconnect(self):
         if not self.portConnected:
@@ -227,11 +234,13 @@ class MyWindow(QtWidgets.QMainWindow):
         ser.close()
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         self.add_text("[" + greenwich_time + "] Порт успешно закрыт.")
+        return
 
     def port_add(self):
         self.ui.selectionWindow.clear()
         ports = port_search()
         self.ui.selectionWindow.addItems(ports)
+        return
 
 
 if __name__ == '__main__':
