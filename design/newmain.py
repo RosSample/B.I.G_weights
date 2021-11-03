@@ -38,6 +38,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.saveButtonClickedCount = 0
         self.calibButtonClickedCount = 0
         self.scanButtonClickedCount = 0
+        self.portConnected = False
 
         self.ui = Ui_Weights()
         self.ui.setupUi(self)
@@ -59,6 +60,11 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.scrollArea.verticalScrollBar().setValue(self.ui.scrollArea.verticalScrollBar().maximum())
 
     def measure(self):
+        if not self.portConnected:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+            return
+
         if self.weighButtonClickedCount == 0:
             time.sleep(1)
             ser.write("m".encode())
@@ -85,14 +91,21 @@ class MyWindow(QtWidgets.QMainWindow):
         return
 
     def save(self):  # сохранение  status: Сохранение...
-        if not card:
+        if not self.portConnected:
             greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует карта памяти.")
+            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+            return
+
+        if self.calibButtonClickedCount == 1:  # Отмена калибровки
+            self.calibButtonClickedCount = 0
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Калибровка отменена.")
+            self.ui.label.setText("работает")
             return
 
         if self.saveButtonClickedCount == 0:
             time.sleep(1)
-            # ser.write("s".encode())
+            ser.write("s".encode())
             greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
             self.add_text("[" + greenwich_time + "] Сохранение...")
             self.ui.label.setText("сохранение")
@@ -103,13 +116,23 @@ class MyWindow(QtWidgets.QMainWindow):
 
         time.sleep(1)
         ser.write("s1".encode())
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] Успешно сохранено.")
+        if ser.readline().strip().decode() == "Data Saved":
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Успешно сохранено.")
+        else:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Отсутствует SD карта или\n ошибка при чтении файла.")
+
         self.ui.label.setText("работает")
         time.sleep(1)
         return
 
     def calib(self):  # калибровка  status: Калибровка...
+        if not self.portConnected:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+            return
+
         if self.calibButtonClickedCount == 0:
             time.sleep(1)
             ser.write("c".encode())
@@ -169,6 +192,11 @@ class MyWindow(QtWidgets.QMainWindow):
         return
 
     def scan(self):  # сканирование штрих кода в течении 5 секунд
+        if not self.portConnected:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+            return
+
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         self.add_text("[" + greenwich_time + "] Сканирование прошло успешно.")
         ser.write("sc".encode())
@@ -176,24 +204,26 @@ class MyWindow(QtWidgets.QMainWindow):
         return
 
     def port_connect(self):
+        self.portConnected = True
         port = self.sender().currentText()
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         self.add_text("[" + greenwich_time + "] Подключение к: " + port)
         global ser
         ser = serial.Serial(port)
 
-        global card
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         self.add_text("[" + greenwich_time + "] " +
                       ser.readline().strip().decode())  # чтение первой строки из serial порта
-        cardln = ser.readline().strip().decode()  # чтение второй строки из serial порта
-        self.add_text("[" + greenwich_time + "] " + cardln)
-        if cardln == "Card initialized.":  # проверка наличия sd карты
-            card = True
-        else:
-            card = False
+        self.add_text("[" + greenwich_time + "] " +
+                      ser.readline().strip().decode())  # чтение второй строки из serial порта
 
     def port_disconnect(self):
+        if not self.portConnected:
+            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
+            self.add_text("[" + greenwich_time + "] Невозможно отключиться от порта,\nподключение отсутствует.")
+            return
+
+        self.portConnected = False
         ser.close()
         greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         self.add_text("[" + greenwich_time + "] Порт успешно закрыт.")
