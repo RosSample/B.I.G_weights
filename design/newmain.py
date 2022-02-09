@@ -74,14 +74,14 @@ class MyWindow(QtWidgets.QMainWindow):
             self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
+        self.add_text(gtime() + " Измерение...")
+        self.ui.label.setText("измерение")
         counter = ''
         sample_index = ''
         r = np.array([])
         for i in range(50):
+            time.sleep(0.5)
             ser.write("m".encode())
-            self.add_text(gtime() + " Измерение...")
-            self.ui.label.setText("измерение")
-
             counter = ser.readline().strip().decode()
             sample_index = ser.readline().strip().decode()
             weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
@@ -93,18 +93,16 @@ class MyWindow(QtWidgets.QMainWindow):
         self.add_text(
             "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + str(round(np.median(r)+0.2, 2)))
         self.ui.label.setText("работает")
-        time.sleep(1)
+        time.sleep(0.5)
         return
 
     def save(self):  # сохранение  status: Сохранение...
         if not self.portConnected:
-
             self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
         if self.calibButtonClickedCount == 1:  # Отмена калибровки
             self.calibButtonClickedCount = 0
-
             self.add_text(gtime() + " Калибровка отменена.")
             self.ui.label.setText("работает")
             return
@@ -112,7 +110,6 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.saveButtonClickedCount == 0:
             time.sleep(1)
             ser.write("s".encode())
-
             self.add_text(gtime() + " Сохранение...")
             self.ui.label.setText("сохранение")
             self.add_text(gtime() + " Нажмите сохранить чтобы продолжить.")
@@ -123,10 +120,8 @@ class MyWindow(QtWidgets.QMainWindow):
         time.sleep(1)
         ser.write("s1".encode())
         if ser.readline().strip().decode() == "Data Saved":
-
             self.add_text(gtime() + " Успешно сохранено.")
         else:
-
             self.add_text(gtime() + " Отсутствует SD карта или\n ошибка при чтении файла.")
 
         self.ui.label.setText("работает")
@@ -135,14 +130,12 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def calib(self):  # калибровка  status: Калибровка...
         if not self.portConnected:
-
             self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
         if self.calibButtonClickedCount == 0:
             time.sleep(1)
             ser.write("c".encode())
-
             self.add_text(gtime() + " Начать калибровку?")
             self.add_text(gtime() + " Для продолжения нажмите калибровать.")
             self.add_text(gtime() + " Для отмены нажмите сохранить.")
@@ -153,7 +146,6 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.calibButtonClickedCount == 1:
             time.sleep(1)
             ser.write("c1".encode())
-
             self.add_text(gtime() + " Калибровка: 0.")
             self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
@@ -162,7 +154,6 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.calibButtonClickedCount == 2:
             time.sleep(1)
             ser.write("c2".encode())
-
             self.add_text(gtime() + " Калибровка: 20.")
             self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
@@ -171,7 +162,6 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.calibButtonClickedCount == 3:
             time.sleep(1)
             ser.write("c2".encode())
-
             self.add_text(gtime() + " Калибровка: 40.")
             self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
@@ -180,7 +170,6 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.calibButtonClickedCount == 4:
             time.sleep(1)
             ser.write("c2".encode())
-
             self.add_text(gtime() + " Калибровка прошла успешна")
             self.calibButtonClickedCount = 0
 
@@ -198,7 +187,6 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def scan(self):  # сканирование штрих кода в течении 5 секунд
         if not self.portConnected:
-
             self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
@@ -213,7 +201,6 @@ class MyWindow(QtWidgets.QMainWindow):
         self.add_text(gtime() + " Подключение к: " + port)
         global ser
         ser = serial.Serial(port)
-
         self.add_text(gtime() + " " +
                       ser.readline().strip().decode())  # чтение первой строки из serial порта
         self.add_text(gtime() + " " +
@@ -222,7 +209,6 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def port_disconnect(self):
         if not self.portConnected:
-
             self.add_text(gtime() + " Невозможно отключиться от порта,\nподключение отсутствует.")
             return
 
