@@ -9,6 +9,10 @@ from PyQt5.QtGui import QIcon
 from design import Ui_Weights  # импорт нашего сгенерированного файла
 
 
+def gtime():
+    return '[' + str(datetime.datetime.utcnow())[:19] + ']'
+
+
 def log_write(text):  # запись в лог
     log = open("log.txt", "a", encoding='utf8')  # открытие/создание лога
     log.write(text + "\n")
@@ -34,7 +38,6 @@ class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
 
-        self.weighButtonClickedCount = 0
         self.saveButtonClickedCount = 0
         self.calibButtonClickedCount = 0
         self.scanButtonClickedCount = 0
@@ -67,55 +70,45 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def measure(self):
         if not self.portConnected:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+
+            self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
-        if self.weighButtonClickedCount == 0:
-            time.sleep(1)
-            ser.write("m".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Измерение...")
-            self.ui.label.setText("измерение")
-            self.add_text("[" + greenwich_time + "] Поставьте груз и нажмите взвесить.")
-            self.weighButtonClickedCount += 1
-            return
-        self.weighButtonClickedCount = 0
+        ser.write("m".encode())
+        self.add_text(gtime() + " Измерение...")
+        self.ui.label.setText("измерение")
 
-        time.sleep(1)
-        ser.write("m1".encode())
         counter = ser.readline().strip().decode()
         sample_index = ser.readline().strip().decode()
         weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
         log_write(
-            "[" + counter + " " + sample_index + " " + greenwich_time + "] " + weight)
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + weight)
         self.add_text(
-            "[" + counter + " " + sample_index + " " + greenwich_time + "] Вес = " + weight + ".")
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + weight + ".")
         self.ui.label.setText("работает")
         time.sleep(1)
         return
 
     def save(self):  # сохранение  status: Сохранение...
         if not self.portConnected:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+
+            self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
         if self.calibButtonClickedCount == 1:  # Отмена калибровки
             self.calibButtonClickedCount = 0
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Калибровка отменена.")
+
+            self.add_text(gtime() + " Калибровка отменена.")
             self.ui.label.setText("работает")
             return
 
         if self.saveButtonClickedCount == 0:
             time.sleep(1)
             ser.write("s".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Сохранение...")
+
+            self.add_text(gtime() + " Сохранение...")
             self.ui.label.setText("сохранение")
-            self.add_text("[" + greenwich_time + "] Нажмите сохранить чтобы продолжить.")
+            self.add_text(gtime() + " Нажмите сохранить чтобы продолжить.")
             self.saveButtonClickedCount += 1
             return
         self.saveButtonClickedCount = 0
@@ -123,11 +116,11 @@ class MyWindow(QtWidgets.QMainWindow):
         time.sleep(1)
         ser.write("s1".encode())
         if ser.readline().strip().decode() == "Data Saved":
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Успешно сохранено.")
+
+            self.add_text(gtime() + " Успешно сохранено.")
         else:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует SD карта или\n ошибка при чтении файла.")
+
+            self.add_text(gtime() + " Отсутствует SD карта или\n ошибка при чтении файла.")
 
         self.ui.label.setText("работает")
         time.sleep(1)
@@ -135,17 +128,17 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def calib(self):  # калибровка  status: Калибровка...
         if not self.portConnected:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+
+            self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
         if self.calibButtonClickedCount == 0:
             time.sleep(1)
             ser.write("c".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Начать калибровку?")
-            self.add_text("[" + greenwich_time + "]" + " Для продолжения нажмите калибровать.")
-            self.add_text("[" + greenwich_time + "]" + " Для отмены нажмите сохранить.")
+
+            self.add_text(gtime() + " Начать калибровку?")
+            self.add_text(gtime() + " Для продолжения нажмите калибровать.")
+            self.add_text(gtime() + " Для отмены нажмите сохранить.")
             self.calibButtonClickedCount += 1
             self.ui.label.setText("калибровка")
             return
@@ -153,35 +146,35 @@ class MyWindow(QtWidgets.QMainWindow):
         if self.calibButtonClickedCount == 1:
             time.sleep(1)
             ser.write("c1".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "]" + " Калибровка: 0.")
-            self.add_text("[" + greenwich_time + "]" + " Нажмите калибровать еще раз.")
+
+            self.add_text(gtime() + " Калибровка: 0.")
+            self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
             return
 
         if self.calibButtonClickedCount == 2:
             time.sleep(1)
             ser.write("c2".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "]" + " Калибровка: 20.")
-            self.add_text("[" + greenwich_time + "]" + " Нажмите калибровать еще раз.")
+
+            self.add_text(gtime() + " Калибровка: 20.")
+            self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
             return
 
         if self.calibButtonClickedCount == 3:
             time.sleep(1)
             ser.write("c2".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "]" + " Калибровка: 40.")
-            self.add_text("[" + greenwich_time + "]" + " Нажмите калибровать еще раз.")
+
+            self.add_text(gtime() + " Калибровка: 40.")
+            self.add_text(gtime() + " Нажмите калибровать еще раз.")
             self.calibButtonClickedCount += 1
             return
 
         if self.calibButtonClickedCount == 4:
             time.sleep(1)
             ser.write("c2".encode())
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "]" + " Калибровка прошла успешна")
+
+            self.add_text(gtime() + " Калибровка прошла успешна")
             self.calibButtonClickedCount = 0
 
         a = ser.readline().strip().decode()  # получаем 4 строки данных для записи в лог: calibration_coefficient_sample
@@ -191,20 +184,18 @@ class MyWindow(QtWidgets.QMainWindow):
         calib_settings = open("calib.txt", "w", encoding='utf8')  # открытие/создание настроек калибровки
         calib_settings.write(a + " " + b + " " + c + " " + d)  # сохранение настроек калибровки в файл
         calib_settings.close()
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        log_write("[" + greenwich_time + "] " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
+        log_write(gtime() + " " + a + " " + b + " " + c + " " + d)  # запись настроек в лог
         self.ui.label.setText("работает")
         time.sleep(1)
         return
 
     def scan(self):  # сканирование штрих кода в течении 5 секунд
         if not self.portConnected:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Отсутствует подключение к порту.")
+
+            self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] Сканирование прошло успешно.")
+        self.add_text(gtime() + " Сканирование прошло успешно.")
         ser.write("sc".encode())
         time.sleep(5)
         return
@@ -212,28 +203,25 @@ class MyWindow(QtWidgets.QMainWindow):
     def port_connect(self):
         self.portConnected = True
         port = self.sender().currentText()
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] Подключение к: " + port)
+        self.add_text(gtime() + " Подключение к: " + port)
         global ser
         ser = serial.Serial(port)
 
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] " +
+        self.add_text(gtime() + " " +
                       ser.readline().strip().decode())  # чтение первой строки из serial порта
-        self.add_text("[" + greenwich_time + "] " +
+        self.add_text(gtime() + " " +
                       ser.readline().strip().decode())  # чтение второй строки из serial порта
         return
 
     def port_disconnect(self):
         if not self.portConnected:
-            greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-            self.add_text("[" + greenwich_time + "] Невозможно отключиться от порта,\nподключение отсутствует.")
+
+            self.add_text(gtime() + " Невозможно отключиться от порта,\nподключение отсутствует.")
             return
 
         self.portConnected = False
         ser.close()
-        greenwich_time = str(datetime.datetime.utcnow())[:19]  # время по гринвичу
-        self.add_text("[" + greenwich_time + "] Порт успешно закрыт.")
+        self.add_text(gtime() + " Порт успешно закрыт.")
         return
 
     def port_add(self):

@@ -212,30 +212,6 @@ void save(){
   delay(500);
 }
 void measure(){
-  lcd.setCursor(0, 2); 
-  lcd.print(F("Waiting"));
-  lcd.setCursor(0, 3);   
-  lcd.print(F("Press to cont-ue"));
-  delay(500);
-  while (digitalRead(3) != 0){
-    if (Serial.available()>0){
-      command = String(Serial.readString());
-      if (command == "m1") {
-        break;
-      } else {
-        lcd.clear();
-        displayview();
-        lcd.setCursor(0, 2);
-        return;
-      }
-     }
-    if ((digitalRead(2) == 0 ) || (digitalRead(4) == 0)){
-      lcd.clear();
-      displayview();
-      lcd.setCursor(0, 2);
-      return;
-    }
-  }
   for(int i = 0; i < 9; i++){                            //Цикл по итогу которого мы получаем два массива заполненных результатами, полученными с тензодатчиков
     temp_w_calib = scale1.read();
     temp_w_sample = scale2.read();
