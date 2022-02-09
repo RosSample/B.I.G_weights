@@ -2,6 +2,7 @@ import sys
 import serial
 import datetime
 import time
+import numpy as np
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
@@ -70,21 +71,27 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def measure(self):
         if not self.portConnected:
-
             self.add_text(gtime() + " Отсутствует подключение к порту.")
             return
 
-        ser.write("m".encode())
-        self.add_text(gtime() + " Измерение...")
-        self.ui.label.setText("измерение")
+        counter = ''
+        sample_index = ''
+        r = np.array([])
+        for i in range(50):
+            ser.write("m".encode())
+            self.add_text(gtime() + " Измерение...")
+            self.ui.label.setText("измерение")
 
-        counter = ser.readline().strip().decode()
-        sample_index = ser.readline().strip().decode()
-        weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
+            counter = ser.readline().strip().decode()
+            sample_index = ser.readline().strip().decode()
+            weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
+            r = np.append(r, float(weight))
+            self.add_text("Измерение {i_} из 50".format(i_=i + 1))
+
         log_write(
-            "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + weight)
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + str(round(np.median(r)+0.2, 2)))
         self.add_text(
-            "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + weight + ".")
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + str(round(np.median(r)+0.2, 2)))
         self.ui.label.setText("работает")
         time.sleep(1)
         return
