@@ -3,6 +3,7 @@ import serial
 import datetime
 import time
 import numpy as np
+# from threading import Thread
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
@@ -12,6 +13,18 @@ from design import Ui_Weights  # импорт нашего сгенериров�
 
 def gtime():
     return '[' + str(datetime.datetime.utcnow())[:19] + ']'
+
+
+# def median_loop():
+#     r = np.array([])
+#     for i in range(20):
+#         time.sleep(1)
+#         ser.write("m".encode())
+#         counter = ser.readline().strip().decode()
+#         sample_index = ser.readline().strip().decode()
+#         weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
+#         r = np.append(r, float(weight))
+#     return r
 
 
 def log_write(text):  # запись в лог
@@ -78,22 +91,13 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.label.setText("измерение")
         counter = ''
         sample_index = ''
-        r = np.array([])
-        for i in range(50):
-            time.sleep(0.5)
-            ser.write("m".encode())
-            counter = ser.readline().strip().decode()
-            sample_index = ser.readline().strip().decode()
-            weight = ser.readline().strip().decode()  # вид строки: счетчик, индекс образца, дата, время, вес
-            r = np.append(r, float(weight))
-            self.add_text("Измерение {i_} из 50".format(i_=i + 1))
 
         log_write(
             "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + str(round(np.median(r)+0.2, 2)))
         self.add_text(
             "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + str(round(np.median(r)+0.2, 2)))
         self.ui.label.setText("работает")
-        time.sleep(0.5)
+        time.sleep(1)
         return
 
     def save(self):  # сохранение  status: Сохранение...

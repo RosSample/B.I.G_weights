@@ -49,9 +49,9 @@ float fin_weight_sample = 00.00;
 
 
 float temp_w_calib = 0.00;                                // переменная для временного хранения результата взвешивания с калибровочного датчика
-float sum_calib[9];                                      // массив для хранения всех результатов взвешивания с основного датчика при сортирвоке
+float sum_calib[20];                                      // массив для хранения всех результатов взвешивания с основного датчика при сортирвоке
 float temp_w_sample = 0.00;                               // переменная для временного хранения результата с калибровочного датчика при сортирвоке
-float sum_sample[9];                                     // массив для хранения всех результатов взвешивания с основного датчика при сортирвоке
+float sum_sample[20];                                     // массив для хранения всех результатов взвешивания с основного датчика при сортирвоке
 float temp;                                               // переменная для временного хранения при сортировке
 float w_calib[3];                                         // массив для хранения медианных значений каждого веса калибровочного груза
 float w_sample[3];                                        // массив для хранения медианных значений каждого веса для 
@@ -212,14 +212,15 @@ void save(){
   delay(500);
 }
 void measure(){
-  for(int i = 0; i < 9; i++){                            //Цикл по итогу которого мы получаем два массива заполненных результатами, полученными с тензодатчиков
+  delay(500);
+  for(int i = 0; i < 20; i++){                            //Цикл по итогу которого мы получаем два массива заполненных результатами, полученными с тензодатчиков
     temp_w_calib = scale1.read();
     temp_w_sample = scale2.read();
     sum_calib[i] = temp_w_calib;
     sum_sample[i] = temp_w_sample;
   }
-  for (int j = 0; j + 1 < 9; ++j) {                      //Цикл в котором собствено и просиходит пузырьковая сортировка
-    for (int i = 0; i + 1 < 9 - j; ++i) {
+  for (int j = 0; j + 1 < 20; ++j) {                      //Цикл в котором собствено и просиходит пузырьковая сортировка
+    for (int i = 0; i + 1 < 20 - j; ++i) {
       if ( sum_calib[i] > sum_calib[i + 1]) {
         temp = sum_calib[i];
         sum_calib[i] = sum_calib[i + 1];
@@ -233,8 +234,8 @@ void measure(){
     }
   }
 
-  weight_sample = sum_sample[5];
-  weight_calib = sum_calib[5];
+  weight_sample = sum_sample[10];
+  weight_calib = sum_calib[10];
   weight_sample = (weight_sample * (20 * calibration_coefficient_calib + w_calib[0]))/weight_calib;
   fin_weight_sample = (weight_sample - w_sample[0])/calibration_coefficient_sample;
   Serial.println(counter);
