@@ -148,6 +148,22 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="confirmButton">
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">image: url(:/images/images/connect.png);</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="disconnectButton">
           <property name="maximumSize">
            <size>
