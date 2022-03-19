@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 
 from design import Ui_Weights  # импорт нашего сгенерированного файла
+from adddesign import Ui_DialogAdditionally as Add
 
 
 def gtime():
@@ -72,6 +73,14 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.disconnectButton.clicked.connect(self.port_disconnect)
 
         self.ui.selectionWindow.activated.connect(self.port_connect)
+        self.ui.settingsButton.clicked.connect(self.settings_clicked)
+
+    def settings_clicked(self):
+        dialog = QtWidgets.QDialog()
+        dialog.ui = Add()
+        dialog.ui.setupUi(dialog)
+        dialog.exec_()
+        dialog.show()
 
     def text_clear(self):
         self.ui.textShow.setText("")
