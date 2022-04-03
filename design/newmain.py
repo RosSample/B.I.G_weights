@@ -5,7 +5,7 @@ import time
 import numpy as np
 # from threading import Thread
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtGui import QIcon
 
 from design import Ui_Weights  # импорт нашего сгенерированного файла
@@ -80,7 +80,7 @@ class MyWindow(QtWidgets.QMainWindow):
         dialog.ui = Add()
         dialog.ui.setupUi(dialog)
         dialog.exec_()
-        dialog.show()
+
 
     def text_clear(self):
         self.ui.textShow.setText("")

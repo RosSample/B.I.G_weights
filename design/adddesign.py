@@ -96,13 +96,21 @@ class Ui_DialogAdditionally(object):
         font.setPointSize(8)
         font.setBold(True)
         font.setWeight(75)
+
         self.LabelBaudRate.setFont(font)
         self.LabelBaudRate.setStyleSheet("")
         self.LabelBaudRate.setObjectName("LabelBaudRate")
         self.horizontalLayout_3.addWidget(self.LabelBaudRate)
+
+
         self.comboBoxBaudRate = QtWidgets.QComboBox(self.gridLayoutWidget)
+
         self.comboBoxBaudRate.setObjectName("comboBoxBaudRate")
         self.horizontalLayout_3.addWidget(self.comboBoxBaudRate)
+        listBaudRate = ['4800', '9600', '14400', '19200', '28800', '38400', '57600', '115200']  #список скоростей передачи данных
+        self.comboBoxBaudRate.clear()
+        self.comboBoxBaudRate.addItems(listBaudRate)
+
         self.gridLayout_4.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
         self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
@@ -113,10 +121,13 @@ class Ui_DialogAdditionally(object):
         self.labelLanguage.setFont(font)
         self.labelLanguage.setObjectName("labelLanguage")
         self.horizontalLayout_8.addWidget(self.labelLanguage)
-        self.fontComboBoxLanguage = QtWidgets.QComboBox(self.gridLayoutWidget)
-        self.fontComboBoxLanguage.setCurrentText("")
-        self.fontComboBoxLanguage.setObjectName("fontComboBoxLanguage")
-        self.horizontalLayout_8.addWidget(self.fontComboBoxLanguage)
+        self.comboBoxLanguage = QtWidgets.QComboBox(self.gridLayoutWidget)
+        self.comboBoxLanguage.setCurrentText("")
+        self.comboBoxLanguage.setObjectName("fontComboBoxLanguage")
+        self.horizontalLayout_8.addWidget(self.comboBoxLanguage)
+        listLanguage = ['Русский', 'English']    #список языков
+        self.comboBoxLanguage.clear()
+        self.comboBoxLanguage.addItems(listLanguage)
         self.gridLayout_4.addLayout(self.horizontalLayout_8, 3, 0, 1, 1)
 
         self.retranslateUi(DialogAdditionally)
