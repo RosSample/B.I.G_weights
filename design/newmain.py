@@ -2,10 +2,10 @@ import sys
 import serial
 import datetime
 import time
-import numpy as np
+# import numpy as np
 # from threading import Thread
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtWidgets import QApplication, QFileDialog, QDialog
 from PyQt5.QtGui import QIcon
 
 from design import Ui_Weights  # импорт нашего сгенерированного файла
@@ -51,7 +51,7 @@ def port_search():  # поиск портов
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super(MyWindow, self).__init__()
+        super().__init__()
 
         self.saveButtonClickedCount = 0
         self.calibButtonClickedCount = 0
@@ -59,6 +59,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.portConnected = False
 
         self.ui = Ui_Weights()
+
         self.ui.setupUi(self)
         self.setWindowTitle('Весы')  # название программы
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
@@ -76,11 +77,8 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.settingsButton.clicked.connect(self.settings_clicked)
 
     def settings_clicked(self):
-        dialog = QtWidgets.QDialog()
-        dialog.ui = Add()
-        dialog.ui.setupUi(dialog)
+        dialog = Dialog()
         dialog.exec_()
-
 
     def text_clear(self):
         self.ui.textShow.setText("")
@@ -102,9 +100,9 @@ class MyWindow(QtWidgets.QMainWindow):
         sample_index = ''
 
         log_write(
-            "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + str(round(np.median(r)+0.2, 2)))
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " " + counter)
         self.add_text(
-            "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + str(round(np.median(r)+0.2, 2)))
+            "[" + counter + " " + sample_index + " " + gtime()[1:] + " Вес = " + counter)
         self.ui.label.setText("работает")
         time.sleep(1)
         return
@@ -235,6 +233,21 @@ class MyWindow(QtWidgets.QMainWindow):
         ports = port_search()
         self.ui.selectionWindow.addItems(ports)
         return
+
+
+class Dialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.ui2 = Add()
+        self.ui2.setupUi(self)
+        self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
+        self.show()
+        self.ui2.pushButtonPathLog.clicked.connect(self.path)
+
+    def path(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', 'C:/')
+        self.lineEditPathResults.setText(fname[0])
 
 
 if __name__ == '__main__':
