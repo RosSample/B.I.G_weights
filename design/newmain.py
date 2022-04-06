@@ -1,3 +1,4 @@
+import os
 import sys
 import serial
 import datetime
@@ -243,13 +244,19 @@ class Dialog(QDialog):
         self.ui2.setupUi(self)
         self.setWindowIcon(QIcon('./images/icon.png'))  # иконка программы
         self.show()
-        self.ui2.pushButtonPathLog.clicked.connect(self.path)
+        self.ui2.pushButtonPathLog.clicked.connect(self.path_log)
+        self.ui2.pushButtonPathResults.clicked.connect(self.path_results)
 
-    def path(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file', 'C:/')
-        self.lineEditPathResults.setText(fname[0])
+    def path_log(self):
+        dir_log = QFileDialog.getOpenFileName(self, 'Open file', 'C:/')
+        self.ui2.lineEditPathLog.setText(dir_log[0])
+        return dir_log
 
-
+    def path_results(self):
+        dir_results = QFileDialog.getOpenFileName(self, 'Open file', 'C:/')
+        self.ui2.lineEditPathResults.setText(dir_results[0])
+        return dir_results
+    
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     application = MyWindow()
